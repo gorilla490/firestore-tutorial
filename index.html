@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<body>
+hello my firebase
+First: <input type="text" id="firstinput">
+<input type="button" value="add" onclick="addUser()">
+<p id="userspre">
+</p>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-firestore.js"></script>
+<script src="config.js"></script>
+
+<script>
+  // Initialize Firebase
+
+  // config object, apiKey, url, etc. in config.js
+
+  var defaultApp = firebase.initializeApp(config);
+  console.log(defaultApp.name);
+
+  //const firebase = require("firebase");
+  //require("firebase/firestore");
+
+  var db = firebase.firestore();
+  showUsers();
+
+  function addPerson(first, last, born) {
+    var person = { first: first, last: last, born: born };
+
+    db.collection("users").add(person)
+    .then(function(docRef) {
+      console.log("document written id: ", docRef.id);
+      showUsers();
+    })
+    .catch(function(error) {
+      console.error("Error: ", error);
+    });
+  }
+
+  function showUsers() {
+    var mypre = document.getElementById("userspre");
+    var newnames = "";
+    var usersRef = db.collection("users");
+
+    var query = usersRef;  //.where("first", "==", true);
+    // db.collection("users").orderBy("first").then((querySnapshot) => {
+      // querySnapshot.forEach((doc) => {
+        // newnames += `${doc.data().first}<br><br>`;
+      // });
+      // mypre.innerHTML = newnames;
+    // });
+    query.orderBy("first").get().then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+        console.log(doc.id, " => ", doc.data());
+      })
+    })
+    .catch(function(error) {
+      console.log("Ërror ,", error);
+
+    })
+  }
+
+  function addUser() {
+    addPerson(document.getElementById("firstinput").value, "LASTNAME", 1999);
+  }
+</script>
+</body>
+</html>
